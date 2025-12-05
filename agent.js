@@ -1,11 +1,53 @@
-// ai agent - coordinates with workers ai (llama 3.3) to generate performance insights and chat responses
+/**
+ * agent.js - ai agent for generating performance insights and chat responses
+ * 
+ * coordinates with cloudflare workers ai (llama 3.3) to:
+ * - analyze website performance data and generate insights
+ * - respond to chat messages with performance advice
+ * - provide cloudflare-specific recommendations
+ * 
+ * uses workers ai binding or direct api calls to interact with llama 3.3 model.
+ * 
+ * @module agent
+ */
 
+/**
+ * speed doctor ai agent class
+ * 
+ * handles all ai interactions for the site speed doctor application.
+ * generates insights from analysis data and responds to user questions.
+ */
 export class SpeedDoctorAgent {
+  /**
+   * constructor - initialize ai agent
+   * 
+   * @param {Object} env - cloudflare workers environment
+   *   - env.AI: workers ai binding (preferred method)
+   *   - env.ACCOUNT_ID: cloudflare account id (for api calls)
+   *   - env.AI_TOKEN: api token (for api calls)
+   */
   constructor(env) {
     this.env = env;
     // TODO: initialize ai model config
   }
 
+  /**
+   * generates ai-powered insights from analysis data
+   * 
+   * takes raw performance metrics and generates:
+   * - summary of performance issues
+   * - prioritized recommendations
+   * - cloudflare feature suggestions
+   * 
+   * @param {Object} analysisData - site analysis data from analyzer
+   *   - url: string
+   *   - coreWebVitals: object
+   *   - caching: object
+   *   - assets: object
+   *   - cloudflare: object
+   *   - metrics: object
+   * @returns {Promise<Object>} insights object with summary, recommendations, cloudflareFeatures
+   */
   async generateAnalysisInsights(analysisData) {
     // TODO: format analysis data into prompt
     // TODO: call workers ai with llama 3.3 model
@@ -22,6 +64,18 @@ export class SpeedDoctorAgent {
     };
   }
 
+  /**
+   * handles chat messages with context
+   * 
+   * processes user questions about site performance, using:
+   * - analysis context (latest analysis data)
+   * - chat history (previous conversation)
+   * 
+   * @param {string} message - user's chat message
+   * @param {Object} analysisContext - latest analysis data for context
+   * @param {Array} chatHistory - previous chat messages [{ role, content }, ...]
+   * @returns {Promise<Object>} response object with text and optional suggestions
+   */
   async handleChatMessage(message, analysisContext, chatHistory) {
     // TODO: build chat prompt with context
     // TODO: include relevant analysis data in context
@@ -38,6 +92,15 @@ export class SpeedDoctorAgent {
     };
   }
 
+  /**
+   * calls workers ai with a prompt
+   * 
+   * uses workers ai binding if available, otherwise falls back to direct api call.
+   * preferred method is env.AI.run() as it's simpler and faster.
+   * 
+   * @param {string} prompt - prompt to send to ai
+   * @returns {Promise<Object>} parsed ai response
+   */
   async callWorkersAI(prompt) {
     // TODO: use workers ai binding (env.AI.run()) instead of fetch
     // TODO: use llama 3.3 model: @cf/meta/llama-3.3-70b-instruct
@@ -45,15 +108,19 @@ export class SpeedDoctorAgent {
     // TODO: parse response
 
     // example using ai binding (preferred):
-    // const response = await this.env.AI.run('@cf/meta/llama-3.3-70b-instruct', {
-    //   messages: [
-    //     { role: 'system', content: 'you are a website performance expert...' },
-    //     { role: 'user', content: prompt }
-    //   ]
-    // });
+    // if (this.env.AI) {
+    //   const response = await this.env.AI.run('@cf/meta/llama-3.3-70b-instruct', {
+    //     messages: [
+    //       { role: 'system', content: 'you are a website performance expert...' },
+    //       { role: 'user', content: prompt }
+    //     ]
+    //   });
+    //   return this.parseAIResponse(response);
+    // }
 
     try {
       // fallback to direct api call if binding not available
+      // requires ACCOUNT_ID and AI_TOKEN in env
       const response = await fetch('https://api.cloudflare.com/client/v4/accounts/' + 
         this.env.ACCOUNT_ID + '/ai/run/@cf/meta/llama-3.3-70b-instruct', {
         method: 'POST',
@@ -83,6 +150,15 @@ export class SpeedDoctorAgent {
     }
   }
 
+  /**
+   * builds analysis prompt from performance data
+   * 
+   * formats analysis data into a comprehensive prompt for the ai.
+   * includes all relevant metrics and asks for specific outputs.
+   * 
+   * @param {Object} analysisData - site analysis data
+   * @returns {string} formatted prompt for ai
+   */
   buildAnalysisPrompt(analysisData) {
     // TODO: construct comprehensive prompt with all analysis metrics
     // TODO: include core web vitals, caching headers, asset sizes, etc
@@ -98,6 +174,20 @@ assets: ${JSON.stringify(analysisData.assets)}
 provide a summary, top 5 recommendations, and cloudflare features that could help.`;
   }
 
+  /**
+   * builds chat prompt with context
+   * 
+   * creates a conversational prompt that includes:
+   * - system context (performance expert role)
+   * - recent analysis data
+   * - previous chat messages (for continuity)
+   * - current user question
+   * 
+   * @param {string} message - user's current message
+   * @param {Object} analysisContext - latest analysis data
+   * @param {Array} chatHistory - previous messages (last 5)
+   * @returns {string} formatted prompt for ai
+   */
   buildChatPrompt(message, analysisContext, chatHistory) {
     // TODO: build conversational prompt
     // TODO: include recent analysis context
@@ -122,6 +212,15 @@ provide a summary, top 5 recommendations, and cloudflare features that could hel
     return prompt;
   }
 
+  /**
+   * parses ai response into structured format
+   * 
+   * handles different response formats from workers ai.
+   * extracts text content and attempts to parse structured data.
+   * 
+   * @param {Object} data - raw response from ai api
+   * @returns {Object} parsed response with text and optional structured data
+   */
   parseAIResponse(data) {
     // TODO: extract text from ai response
     // TODO: try to extract structured data if ai returns json
@@ -138,4 +237,3 @@ provide a summary, top 5 recommendations, and cloudflare features that could hel
     return { text: JSON.stringify(data) };
   }
 }
-

@@ -1,11 +1,44 @@
-// analyzer - collects site performance metrics and data
+/**
+ * analyzer.js - website performance analyzer
+ * 
+ * collects performance metrics and data from websites:
+ * - core web vitals (lcp, fid, cls, fcp)
+ * - caching headers and cdn status
+ * - asset analysis (scripts, stylesheets, images)
+ * - cloudflare detection
+ * - basic metrics (ttfb, load times)
+ * 
+ * uses fetch api to analyze sites and parse html/headers.
+ * 
+ * @module analyzer
+ */
 
+/**
+ * site analyzer class
+ * 
+ * performs comprehensive performance analysis of websites.
+ * collects metrics, checks headers, analyzes assets, detects cloudflare usage.
+ */
 export class SiteAnalyzer {
+  /**
+   * constructor - initialize analyzer
+   * 
+   * @param {Object} env - cloudflare workers environment
+   */
   constructor(env) {
     this.env = env;
     // TODO: initialize any needed config
   }
 
+  /**
+   * main analysis method - performs complete site analysis
+   * 
+   * coordinates all analysis steps and returns comprehensive results.
+   * 
+   * @param {string} siteUrl - url of site to analyze
+   * @returns {Promise<Object>} complete analysis data object
+   * @throws {Error} if analysis fails
+   */
   async analyzeSite(siteUrl) {
     // TODO: fetch site and collect metrics
     // TODO: check core web vitals
@@ -15,11 +48,14 @@ export class SiteAnalyzer {
     // TODO: return structured analysis data
 
     try {
-      const metrics = await this.collectMetrics(siteUrl);
-      const coreWebVitals = await this.checkCoreWebVitals(siteUrl);
-      const caching = await this.analyzeCaching(siteUrl);
-      const assets = await this.analyzeAssets(siteUrl);
-      const cloudflare = await this.detectCloudflare(siteUrl);
+      // run all analysis steps in parallel for speed
+      const [metrics, coreWebVitals, caching, assets, cloudflare] = await Promise.all([
+        this.collectMetrics(siteUrl),
+        this.checkCoreWebVitals(siteUrl),
+        this.analyzeCaching(siteUrl),
+        this.analyzeAssets(siteUrl),
+        this.detectCloudflare(siteUrl)
+      ]);
 
       return {
         url: siteUrl,
@@ -35,33 +71,62 @@ export class SiteAnalyzer {
     }
   }
 
+  /**
+   * collects basic performance metrics
+   * 
+   * measures response times and load metrics.
+   * 
+   * @param {string} siteUrl - url to measure
+   * @returns {Promise<Object>} metrics object with ttfb, domLoad, fullLoad
+   */
   async collectMetrics(siteUrl) {
     // TODO: use pagespeed insights api or similar
     // TODO: or fetch site and measure response times
     // TODO: collect ttfb, dom load time, etc
 
+    // placeholder - would measure actual times
     return {
-      ttfb: 0,
-      domLoad: 0,
-      fullLoad: 0
+      ttfb: 0,        // time to first byte
+      domLoad: 0,     // dom content loaded time
+      fullLoad: 0     // full page load time
     };
   }
 
+  /**
+   * checks core web vitals
+   * 
+   * measures google's core web vitals metrics:
+   * - lcp: largest contentful paint
+   * - fid/cls: first input delay / cumulative layout shift
+   * - fcp: first contentful paint
+   * 
+   * @param {string} siteUrl - url to check
+   * @returns {Promise<Object>} vitals object with lcp, fid, cls, fcp
+   */
   async checkCoreWebVitals(siteUrl) {
     // TODO: measure lcp (largest contentful paint)
     // TODO: measure fid/cls (first input delay / cumulative layout shift)
     // TODO: measure fcp (first contentful paint)
     // TODO: return structured vitals data
 
+    // placeholder - would use performance api or lighthouse
     return {
-      lcp: null,
-      fid: null,
-      cls: null,
-      fcp: null,
+      lcp: null,   // largest contentful paint (ms)
+      fid: null,   // first input delay (ms)
+      cls: null,   // cumulative layout shift (score)
+      fcp: null,   // first contentful paint (ms)
       status: 'not measured'
     };
   }
 
+  /**
+   * analyzes caching configuration
+   * 
+   * checks cache-control headers, etags, and cdn cache status.
+   * 
+   * @param {string} siteUrl - url to analyze
+   * @returns {Promise<Object>} caching analysis with headers and recommendations
+   */
   async analyzeCaching(siteUrl) {
     // TODO: fetch site and check cache-control headers
     // TODO: check etag headers
@@ -96,6 +161,15 @@ export class SiteAnalyzer {
     }
   }
 
+  /**
+   * analyzes website assets
+   * 
+   * parses html to find scripts, stylesheets, and images.
+   * checks sizes, minification, cdn usage.
+   * 
+   * @param {string} siteUrl - url to analyze
+   * @returns {Promise<Object>} asset analysis with counts and recommendations
+   */
   async analyzeAssets(siteUrl) {
     // TODO: fetch site html
     // TODO: parse html for scripts, stylesheets, images
@@ -130,6 +204,14 @@ export class SiteAnalyzer {
     }
   }
 
+  /**
+   * detects cloudflare usage
+   * 
+   * checks if site is behind cloudflare and detects enabled features.
+   * 
+   * @param {string} siteUrl - url to check
+   * @returns {Promise<Object>} cloudflare detection results
+   */
   async detectCloudflare(siteUrl) {
     // TODO: check if site is behind cloudflare
     // TODO: check cloudflare-specific headers
@@ -162,6 +244,19 @@ export class SiteAnalyzer {
     }
   }
 
+  // ============================================================================
+  // html parsing helper methods
+  // ============================================================================
+
+  /**
+   * extracts script tags from html
+   * 
+   * finds all script tags with src attributes.
+   * uses regex for now, should use proper html parser.
+   * 
+   * @param {string} html - html content to parse
+   * @returns {Array<string>} array of script src urls
+   */
   extractScripts(html) {
     // TODO: use proper html parser
     // TODO: extract all script tags and their src attributes
@@ -169,6 +264,14 @@ export class SiteAnalyzer {
     return matches;
   }
 
+  /**
+   * extracts stylesheet links from html
+   * 
+   * finds all link tags with rel=stylesheet.
+   * 
+   * @param {string} html - html content to parse
+   * @returns {Array<string>} array of stylesheet href urls
+   */
   extractStylesheets(html) {
     // TODO: use proper html parser
     // TODO: extract all link tags with rel=stylesheet
@@ -176,6 +279,14 @@ export class SiteAnalyzer {
     return matches;
   }
 
+  /**
+   * extracts image tags from html
+   * 
+   * finds all img tags with src attributes.
+   * 
+   * @param {string} html - html content to parse
+   * @returns {Array<string>} array of image src urls
+   */
   extractImages(html) {
     // TODO: use proper html parser
     // TODO: extract all img tags and their src attributes
@@ -183,4 +294,3 @@ export class SiteAnalyzer {
     return matches;
   }
 }
-
