@@ -107,6 +107,8 @@ async function handleApiRequest(request, env, ctx) {
  */
 async function handleAnalyze(request, env, ctx) {
   try {
+    // clone request before reading body so durable object can read it too
+    const clonedRequest = request.clone();
     const body = await request.json();
     const { siteUrl } = body;
 
@@ -129,7 +131,7 @@ async function handleAnalyze(request, env, ctx) {
 
     // forward request to durable object
     // durable object will handle analysis, state storage, etc
-    const response = await durableObject.fetch(request);
+    const response = await durableObject.fetch(clonedRequest);
 
     return response;
   } catch (error) {
@@ -154,6 +156,8 @@ async function handleAnalyze(request, env, ctx) {
  */
 async function handleChat(request, env, ctx) {
   try {
+    // clone request before reading body so durable object can read it too
+    const clonedRequest = request.clone();
     const body = await request.json();
     const { siteId, message } = body;
 
@@ -172,7 +176,7 @@ async function handleChat(request, env, ctx) {
 
     // forward chat request to durable object
     // durable object will load chat history, call ai agent, store response
-    const response = await durableObject.fetch(request);
+    const response = await durableObject.fetch(clonedRequest);
 
     return response;
   } catch (error) {

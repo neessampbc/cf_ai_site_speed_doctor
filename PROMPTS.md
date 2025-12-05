@@ -20,7 +20,10 @@ this document contains the prompts i used with AI assistants to help build this 
 
 **Response:** got example code for making requests to the workers ai endpoint.
 
+
+
+
 ---
 
-pls note: most of the code was written manually. AI was  used for quick syntax questions and API reference lookups. the architecture, logic flow, and implementation details were all done without ai assistance.
+pls note: most of the code was written manually. AI was  used for quick syntax questions and API reference lookups, a codex review bot reviews all PRs and suggests improvements. the core implementation and architecture decisions are made independently. the architecture, logic flow, and implementation details were all done without ai assistance.
 
