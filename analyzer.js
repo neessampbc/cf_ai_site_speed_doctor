@@ -260,8 +260,8 @@ export class SiteAnalyzer {
   extractScripts(html) {
     // TODO: use proper html parser
     // TODO: extract all script tags and their src attributes
-    const matches = html.match(/<script[^>]*src=["']([^"']+)["'][^>]*>/gi) || [];
-    return matches;
+    const matches = [...html.matchAll(/<script[^>]*src=["']([^"']+)["'][^>]*>/gi)];
+    return matches.map(match => match[1]);
   }
 
   /**
@@ -275,8 +275,8 @@ export class SiteAnalyzer {
   extractStylesheets(html) {
     // TODO: use proper html parser
     // TODO: extract all link tags with rel=stylesheet
-    const matches = html.match(/<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi) || [];
-    return matches;
+    const matches = [...html.matchAll(/<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi)];
+    return matches.map(match => match[1]);
   }
 
   /**
@@ -290,7 +290,7 @@ export class SiteAnalyzer {
   extractImages(html) {
     // TODO: use proper html parser
     // TODO: extract all img tags and their src attributes
-    const matches = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi) || [];
-    return matches;
+    const matches = [...html.matchAll(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi)];
+    return matches.map(match => match[1]);
   }
 }
