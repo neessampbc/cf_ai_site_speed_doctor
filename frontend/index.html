@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Site Speed Doctor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ AI Site Speed Doctor</h1>
+      <p>Analyze your website performance and get AI-powered recommendations</p>
+    </header>
+
+    <main>
+      <section class="analyze-section">
+        <h2>Analyze a Website</h2>
+        <form id="analyze-form">
+          <input 
+            type="url" 
+            id="site-url" 
+            placeholder="https://example.com" 
+            required
+          >
+          <button type="submit">Analyze</button>
+        </form>
+        <div id="analyze-status" class="status"></div>
+      </section>
+
+      <section class="results-section" id="results-section" style="display: none;">
+        <h2>Analysis Results</h2>
+        <div id="results-content"></div>
+      </section>
+
+      <section class="chat-section" id="chat-section" style="display: none;">
+        <h2>Chat with AI</h2>
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form">
+          <input 
+            type="text" 
+            id="chat-input" 
+            placeholder="Ask about performance improvements..." 
+            required
+          >
+          <button type="submit">Send</button>
+        </form>
+      </section>
+
+      <section class="history-section">
+        <h2>Analysis History</h2>
+        <div id="history-content"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

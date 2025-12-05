@@ -1,0 +1,30 @@
+name = "cf_ai_site_speed_doctor"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "./frontend"
+
+[durable_objects]
+bindings = [
+  { name = "SPEED_DOCTOR", class_name = "SpeedDoctorDurableObject" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SpeedDoctorDurableObject"]
+
+[env.production]
+name = "cf_ai_site_speed_doctor"
+
+[env.production.durable_objects]
+bindings = [
+  { name = "SPEED_DOCTOR", class_name = "SpeedDoctorDurableObject" }
+]
+
+# TODO: add ai binding when workers ai is configured
+# [ai]
+# binding = "AI"
+
+# TODO: add account id and ai token as secrets
+# use: wrangler secret put ACCOUNT_ID
+# use: wrangler secret put AI_TOKEN
+

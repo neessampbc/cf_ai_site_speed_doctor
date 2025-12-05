@@ -1,0 +1,25 @@
+{
+  "name": "cf_ai_site_speed_doctor",
+  "version": "1.0.0",
+  "description": "AI-powered website performance auditor built on Cloudflare Workers",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "pages:dev": "wrangler pages dev ./frontend",
+    "pages:deploy": "wrangler pages deploy ./frontend"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "ai",
+    "performance",
+    "web-vitals"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
+
