@@ -7,7 +7,7 @@
  * - analysis history display
  * - result visualization
  * 
- * communicates with cloudflare worker api endpoints.
+ * communicates with cloudflare worker api endpoints
  * 
  * @module frontend/script
  */
@@ -58,7 +58,7 @@ document.getElementById('chat-form').addEventListener('submit', async (e) => {
 async function analyzeSite(url) {
   const statusEl = document.getElementById('analyze-status');
   statusEl.className = 'status loading';
-  statusEl.textContent = 'analyzing site...';
+  statusEl.textContent = 'Analyzing site...';
 
   try {
     // send analysis request to worker api
@@ -79,7 +79,7 @@ async function analyzeSite(url) {
 
     currentSiteId = data.siteId;
     statusEl.className = 'status success';
-    statusEl.textContent = 'analysis complete!';
+    statusEl.textContent = 'Analysis complete!';
 
     // TODO: display results properly
     displayResults(data);
@@ -91,7 +91,7 @@ async function analyzeSite(url) {
 
   } catch (error) {
     statusEl.className = 'status error';
-    statusEl.textContent = `error: ${error.message}`;
+    statusEl.textContent = `Error: ${error.message}`;
   }
 }
 
@@ -106,7 +106,7 @@ async function analyzeSite(url) {
 async function sendChatMessage(message) {
   // require site analysis before chat
   if (!currentSiteId) {
-    alert('please analyze a site first');
+    alert('Please analyze a site first');
     return;
   }
 
@@ -116,7 +116,17 @@ async function sendChatMessage(message) {
   const chatMessages = document.getElementById('chat-messages');
   const loadingEl = document.createElement('div');
   loadingEl.className = 'message ai';
-  loadingEl.innerHTML = '<div class="role">ai</div>thinking...';
+  
+  // create loading message safely using textContent
+  const loadingRole = document.createElement('div');
+  loadingRole.className = 'role';
+  loadingRole.textContent = 'ai';
+  
+  const loadingContent = document.createElement('div');
+  loadingContent.textContent = 'Thinking...';
+  
+  loadingEl.appendChild(loadingRole);
+  loadingEl.appendChild(loadingContent);
   chatMessages.appendChild(loadingEl);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -142,11 +152,11 @@ async function sendChatMessage(message) {
     loadingEl.remove();
 
     // add ai response
-    addChatMessage('ai', data.response || 'no response');
+    addChatMessage('ai', data.response || 'No response');
 
   } catch (error) {
     loadingEl.remove();
-    addChatMessage('ai', `error: ${error.message}`);
+    addChatMessage('ai', `Error: ${error.message}`);
   }
 }
 
@@ -192,28 +202,60 @@ function displayResults(data) {
   
   resultsSection.style.display = 'block';
   
+  // clear previous results
+  resultsContent.textContent = '';
+  
   // TODO: format and display results nicely
   // TODO: add charts/graphs for metrics
   // TODO: highlight key recommendations
-  resultsContent.innerHTML = `
-    <div class="results-grid">
-      <div class="result-card">
-        <h3>site url</h3>
-        <div class="value">${data.url || 'unknown'}</div>
-      </div>
-      <div class="result-card">
-        <h3>status</h3>
-        <div class="value">${data.status || 'complete'}</div>
-      </div>
-    </div>
-    <pre style="margin-top: 20px; padding: 15px; background: white; border-radius: 6px; overflow-x: auto;">${JSON.stringify(data, null, 2)}</pre>
-  `;
+  
+  // create results grid safely using dom methods
+  const grid = document.createElement('div');
+  grid.className = 'results-grid';
+  
+  // site url card
+  const urlCard = document.createElement('div');
+  urlCard.className = 'result-card';
+  const urlTitle = document.createElement('h3');
+  urlTitle.textContent = 'Site URL';
+  const urlValue = document.createElement('div');
+  urlValue.className = 'value';
+  urlValue.textContent = data.url || 'Unknown';
+  urlCard.appendChild(urlTitle);
+  urlCard.appendChild(urlValue);
+  
+  // status card
+  const statusCard = document.createElement('div');
+  statusCard.className = 'result-card';
+  const statusTitle = document.createElement('h3');
+  statusTitle.textContent = 'Status';
+  const statusValue = document.createElement('div');
+  statusValue.className = 'value';
+  statusValue.textContent = data.status || 'Complete';
+  statusCard.appendChild(statusTitle);
+  statusCard.appendChild(statusValue);
+  
+  grid.appendChild(urlCard);
+  grid.appendChild(statusCard);
+  
+  // json preview - use textContent for safety
+  const pre = document.createElement('pre');
+  pre.style.marginTop = '20px';
+  pre.style.padding = '15px';
+  pre.style.background = 'white';
+  pre.style.borderRadius = '6px';
+  pre.style.overflowX = 'auto';
+  pre.textContent = JSON.stringify(data, null, 2);
+  
+  resultsContent.appendChild(grid);
+  resultsContent.appendChild(pre);
 }
 
 /**
  * adds a message to the chat interface
  * 
  * creates and appends a chat message element to the chat container.
+ * uses textContent to prevent xss attacks from malicious content.
  * 
  * @param {string} role - message role ('user' or 'ai')
  * @param {string} content - message content
@@ -222,10 +264,18 @@ function addChatMessage(role, content) {
   const chatMessages = document.getElementById('chat-messages');
   const messageEl = document.createElement('div');
   messageEl.className = `message ${role}`;
-  messageEl.innerHTML = `
-    <div class="role">${role}</div>
-    <div>${content}</div>
-  `;
+  
+  // create role element
+  const roleEl = document.createElement('div');
+  roleEl.className = 'role';
+  roleEl.textContent = role;
+  
+  // create content element - use textContent to prevent xss
+  const contentEl = document.createElement('div');
+  contentEl.textContent = content;
+  
+  messageEl.appendChild(roleEl);
+  messageEl.appendChild(contentEl);
   chatMessages.appendChild(messageEl);
   
   // scroll to bottom to show latest message
@@ -243,16 +293,28 @@ function displayHistory(history) {
   const historyContent = document.getElementById('history-content');
   
   if (history.length === 0) {
-    historyContent.innerHTML = '<p>no history yet</p>';
+    const emptyMsg = document.createElement('p');
+    emptyMsg.textContent = 'No history yet';
+    historyContent.appendChild(emptyMsg);
     return;
   }
 
-  historyContent.innerHTML = history.map(item => `
-    <div class="history-item">
-      <div class="timestamp">${item.timestamp || 'unknown time'}</div>
-      <div>${item.url || 'unknown url'}</div>
-    </div>
-  `).join('');
+  // create history items safely using textContent
+  history.forEach(item => {
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    
+    const timestamp = document.createElement('div');
+    timestamp.className = 'timestamp';
+    timestamp.textContent = item.timestamp || 'Unknown time';
+    
+    const url = document.createElement('div');
+    url.textContent = item.url || 'Unknown URL';
+    
+    historyItem.appendChild(timestamp);
+    historyItem.appendChild(url);
+    historyContent.appendChild(historyItem);
+  });
 }
 
 // ============================================================================

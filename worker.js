@@ -114,7 +114,7 @@ async function handleAnalyze(request, env, ctx) {
 
     // validate required field
     if (!siteUrl) {
-      return new Response(JSON.stringify({ error: 'site url required' }), {
+      return new Response(JSON.stringify({ error: 'Site URL required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -163,7 +163,7 @@ async function handleChat(request, env, ctx) {
 
     // validate required fields
     if (!siteId || !message) {
-      return new Response(JSON.stringify({ error: 'site id and message required' }), {
+      return new Response(JSON.stringify({ error: 'Site ID and message required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -206,7 +206,7 @@ async function handleHistory(request, env, ctx) {
 
     // validate siteId exists
     if (!siteId) {
-      return new Response(JSON.stringify({ error: 'site id required' }), {
+      return new Response(JSON.stringify({ error: 'Site ID required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });

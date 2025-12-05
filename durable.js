@@ -171,7 +171,7 @@ export class SpeedDoctorDurableObject {
       // TODO: return ai response
 
       return new Response(JSON.stringify({
-        response: 'chat functionality coming soon',
+        response: 'Chat functionality coming soon',
         siteId: siteId
       }), {
         headers: { 'Content-Type': 'application/json' }
@@ -199,7 +199,7 @@ export class SpeedDoctorDurableObject {
 
       return new Response(JSON.stringify({
         history: [],
-        message: 'no history yet'
+        message: 'No history yet'
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
